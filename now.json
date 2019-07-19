@@ -1,0 +1,10 @@
+{
+    "version": 2,
+    "name": "readme-contributors",
+    "alias": ["readme-contributors.now.sh"],
+    "builds": [{ "src": "server.js", "use": "@now/node" }],
+    "routes": [{ "src": "/.*", "dest": "server.js" }],
+    "env": {
+        "GITHUB_TOKEN": "@github-token"
+    }
+}
