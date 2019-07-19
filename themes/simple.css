@@ -1,0 +1,28 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.contributors-list {
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.contributor {
+    display: block;
+    padding: {{ spacing }}px;
+
+    text-align: center;
+
+    list-style-type: none;
+}
+
+
+.contributor img {
+    border-radius: {{ avatarRadius }}%;
+}
+
+
