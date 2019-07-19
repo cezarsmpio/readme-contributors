@@ -1,8 +1,8 @@
-# readme-contributors
+# readme-contributors 🤖
 
 > No, you don't need to install anything.
 
-## Examples
+## Usage
 
 ```html
 <img src="https://readme-contributors.now.sh/facebook/react?extension=jpg&width=300" />
@@ -18,14 +18,16 @@
 
 **It only supports GitHub repositories.**
 
+**It caches images for 7 days.**
+
 ### `https://readme-contributors.now.sh/:owner/:repo?args`
 
 * #### `:owner` - The owner of the repo, it can be an organization as well.
 * #### `:repo` - The repo's name
 
-#### Arguments
+### Arguments
 
-* #### `width` (number)  - The width of the final image.
+* #### `width` (number) - The width of the final image.
 * #### `avatarSize = 30` (number) - The size of each avatar
 * #### `avatarRadius = 50` (number) - The border radius amount of each avatar
 * #### `spacing = 2` (number) - Padding between each avatar
@@ -35,13 +37,13 @@
 * #### `count = 30` (number) - The amount of contributors. Maximum is `100`
 * #### `:extension = jpeg` (string) - `jpg`, `jpeg` or `png`
 
-#### Themes
+### Themes
 
 * #### `simple` (default)
 * #### `dark`
 * #### `unicorn` :unicorn:
 
-#### Examples
+## Examples
 
 ```md
 ![Contributors](https://readme-contributors.now.sh/facebook/react)
