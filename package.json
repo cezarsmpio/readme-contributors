@@ -2,16 +2,26 @@
   "name": "readme-contributors",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "now-start": "node server.js"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.19.0",
+    "chrome-aws-lambda": "^1.18.1",
+    "dotenv": "^8.0.0",
     "fogo": "^1.0.0",
+    "lodash.range": "^3.2.0",
+    "lodash.template": "^4.5.0",
+    "node-cache": "^4.2.0",
+    "puppeteer-core": "^1.18.1"
+  },
+  "devDependencies": {
     "puppeteer": "^1.18.1"
   }
 }
