@@ -18,6 +18,9 @@ deploy:
     env:
       - NODE_ENV=development
     script: now -t $NOW_TOKEN --target staging
+    on:
+      all_branches: true
+      condition: $TRAVIS_BRANCH != master
 
   - provider: script
     skip_cleanup: true
