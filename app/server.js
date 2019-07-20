@@ -55,7 +55,7 @@ const app = (async function() {
             if (cache.get(cacheKey)) {
                 return finishRequest({
                     res,
-                    statusCode: 304,
+                    statusCode: 200,
                     extension: ext,
                     cacheKey,
                 });
