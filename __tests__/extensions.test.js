@@ -1,4 +1,4 @@
-const { getExtension } = require('../extensions');
+const { getExtension } = require('../app/extensions');
 
 it('should return jpeg passing jpg', () => {
     expect(getExtension('jpg')).toBe('jpeg');

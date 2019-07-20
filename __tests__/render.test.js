@@ -3,9 +3,9 @@ const {
     renderContributor,
     renderContributors,
     renderTemplate,
-} = require('../render');
+} = require('../app/render');
 
-jest.mock('../themes.js', function() {
+jest.mock('../app/themes.js', function() {
     return {
         getTheme() {
             return 'body { font-size: 16px; }';

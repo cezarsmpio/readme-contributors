@@ -1,4 +1,4 @@
-const { themes, getTheme } = require('../themes');
+const { themes, getTheme } = require('../app/themes');
 
 jest.mock('fs', function() {
     let i = 1;
