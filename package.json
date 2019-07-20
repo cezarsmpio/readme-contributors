@@ -1,15 +1,15 @@
 {
   "name": "readme-contributors",
-  "version": "0.0.0",
-  "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "node server.js",
-    "now-start": "node server.js"
+    "prettier": "prettier ./**/*.js",
+    "lint": "eslint ./",
+    "validate": "npm run lint && npm run prettier",
+    "format": "npm run prettier -- --write"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Cezar Sampaio",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.19.0",
@@ -22,6 +22,10 @@
     "puppeteer-core": "^1.18.1"
   },
   "devDependencies": {
+    "eslint": "^6.0.1",
+    "eslint-config-prettier": "^6.0.0",
+    "jest": "^24.8.0",
+    "prettier": "^1.18.2",
     "puppeteer": "^1.18.1"
   }
 }

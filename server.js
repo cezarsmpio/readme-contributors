@@ -2,92 +2,19 @@ require('dotenv').config();
 
 const chrome = require('chrome-aws-lambda');
 const fogo = require('fogo');
-const axios = require('axios').default;
-const fs = require('fs');
-const path = require('path');
-const template = require('lodash.template');
 const NodeCache = require('node-cache');
+
+const { getExtension } = require('./extensions');
+const { getRepoContributors } = require('./repos');
+const { render } = require('./render');
 
 const cache = new NodeCache();
 
-const themes = {
-    simple: fs
-        .readFileSync(path.resolve(__dirname, 'themes', 'simple.css'))
-        .toString(),
-    dark: fs
-        .readFileSync(path.resolve(__dirname, 'themes', 'dark.css'))
-        .toString(),
-    unicorn: fs
-        .readFileSync(path.resolve(__dirname, 'themes', 'unicorn.css'))
-        .toString()
-};
-
-function getTheme(theme) {
-    return themes[theme] || theme['simple'];
-}
-
-function renderContributor(contributor, options = {}) {
-    const { avatar_url, login } = contributor;
-
-    return `<li class="contributor"><img src=${avatar_url} width="${
-        options.avatarSize
-    }" /></li>`;
-}
-
-function renderContributors(contributors, options) {
-    return `<ul class="contributors-list">${contributors
-        .map(function(contributor) {
-            return renderContributor(contributor, options);
-        })
-        .join('')}</ul>`;
-}
-
-function renderTemplate(content, data) {
-    return template(content, {
-        interpolate: /{{([\s\S]+?)}}/g
-    })(data);
-}
-
-function render(contributors, options) {
-    const theme = getTheme(options.theme);
-    const style = renderTemplate(theme, options);
-
-    return `<style>${style}</style>${renderContributors(
-        contributors,
-        options
-    )}`;
-}
-
-function getExtension(extension) {
-    const validExtensions = {
-        jpg: 'jpeg',
-        jpeg: 'jpeg',
-        png: 'png'
-    };
-
-    return validExtensions[extension] || validExtensions['jpeg'];
-}
-
-async function getRepoContributors({ owner, repo, count }) {
-    const perPage = Number(count) > 100 ? 100 : count;
-
-    const { data } = await axios.get(
-        `https://api.github.com/repos/${owner}/${repo}/contributors?per_page=${perPage}`,
-        {
-            headers: {
-                Authorization: `token ${process.env.GITHUB_TOKEN}`
-            }
-        }
-    );
-
-    return data;
-}
-
-module.exports = (async function() {
+const app = (async function() {
     const browser = await chrome.puppeteer.launch({
         args: chrome.args,
         executablePath: await chrome.executablePath,
-        headless: true
+        headless: true,
     });
 
     const server = fogo.createServer({
@@ -101,14 +28,14 @@ module.exports = (async function() {
                 aspectRatio = '2',
                 quality = '100',
                 count = '30',
-                extension = 'jpeg'
+                extension = 'jpeg',
             } = url.query;
             const { owner, repo } = params;
             const options = {
                 avatarSize,
                 avatarRadius,
                 spacing,
-                theme
+                theme,
             };
             const ext = getExtension(extension);
 
@@ -121,7 +48,7 @@ module.exports = (async function() {
                 const contributors = await getRepoContributors({
                     owner,
                     repo,
-                    count
+                    count,
                 });
 
                 const widthAutoSize =
@@ -131,14 +58,14 @@ module.exports = (async function() {
                 const page = await browser.newPage();
                 await page.setViewport({
                     width: Number(width) || widthAutoSize,
-                    height: 900,
-                    deviceScaleFactor: Number(aspectRatio)
+                    height: 0,
+                    deviceScaleFactor: Number(aspectRatio),
                 });
                 await page.setContent(await render(contributors, options));
                 const contributorsList = await page.$('.contributors-list');
                 const image = await contributorsList.screenshot({
                     type: ext,
-                    quality: ext === 'png' ? undefined : Number(quality)
+                    quality: ext === 'png' ? undefined : Number(quality),
                 });
 
                 await page.close();
@@ -153,7 +80,7 @@ module.exports = (async function() {
                 res.writeHead(200, { 'Content-Type': `image/${ext}` });
                 return res.end();
             }
-        }
+        },
     });
 
     process.on('exit', async function() {
@@ -164,3 +91,5 @@ module.exports = (async function() {
 
     return server;
 })();
+
+module.exports = app;
