@@ -2,13 +2,12 @@ require('dotenv').config();
 
 const chrome = require('chrome-aws-lambda');
 const fogo = require('fogo');
-const NodeCache = require('node-cache');
+const etag = require('etag');
 
+const { cache, ttl } = require('./cache');
 const { getExtension } = require('./extensions');
 const { getRepoContributors } = require('./repos');
 const { render } = require('./render');
-
-const cache = new NodeCache();
 
 const app = (async function() {
     const browser = await chrome.puppeteer.launch({
@@ -16,6 +15,19 @@ const app = (async function() {
         executablePath: await chrome.executablePath,
         headless: true,
     });
+
+    function finishRequest({ res, statusCode, cacheKey, extension }) {
+        const future = new Date(cache.getTtl(cacheKey));
+        const resource = cache.get(cacheKey);
+
+        res.setHeader('Cache-Control', `max-age=${ttl}`);
+        res.setHeader('Expires', future.toUTCString());
+        res.setHeader('Etag', resource.etag);
+        res.setHeader('Content-Type', `image/${extension}`);
+        res.writeHead(statusCode);
+
+        return res.end(resource.image);
+    }
 
     const server = fogo.createServer({
         '/:owner/:repo': async function(req, res, url, params) {
@@ -38,10 +50,15 @@ const app = (async function() {
                 theme,
             };
             const ext = getExtension(extension);
+            const cacheKey = req.url;
 
-            if (cache.get(req.url)) {
-                res.writeHead(200, { 'Content-Type': `image/${ext}` });
-                return res.end(cache.get(req.url));
+            if (cache.get(cacheKey)) {
+                return finishRequest({
+                    res,
+                    statusCode: 304,
+                    extension: ext,
+                    cacheKey,
+                });
             }
 
             try {
@@ -67,17 +84,24 @@ const app = (async function() {
                     type: ext,
                     quality: ext === 'png' ? undefined : Number(quality),
                 });
+                const resource = { image, etag: etag(image) };
 
                 await page.close();
 
-                cache.set(req.url, image, 604800); // 7 days
+                cache.set(cacheKey, resource);
 
-                res.writeHead(200, { 'Content-Type': `image/${ext}` });
-                return res.end(image);
+                return finishRequest({
+                    res,
+                    statusCode: 200,
+                    extension: ext,
+                    cacheKey,
+                });
             } catch (err) {
-                console.log(err);
+                res.setHeader('Cache-Control', 'max-age=0');
+                res.setHeader('Expires', new Date().toUTCString());
+                res.setHeader('Content-Type', `image/${ext}`);
+                res.writeHead(200);
 
-                res.writeHead(200, { 'Content-Type': `image/${ext}` });
                 return res.end();
             }
         },
