@@ -2,13 +2,11 @@ require('dotenv').config();
 
 const chrome = require('chrome-aws-lambda');
 const fogo = require('fogo');
-const NodeCache = require('node-cache');
 
+const { cache } = require('./cache');
 const { getExtension } = require('./extensions');
 const { getRepoContributors } = require('./repos');
 const { render } = require('./render');
-
-const cache = new NodeCache();
 
 const app = (async function() {
     const browser = await chrome.puppeteer.launch({
@@ -38,10 +36,13 @@ const app = (async function() {
                 theme,
             };
             const ext = getExtension(extension);
+            const cacheKey = req.url;
 
-            if (cache.get(req.url)) {
-                res.writeHead(200, { 'Content-Type': `image/${ext}` });
-                return res.end(cache.get(req.url));
+            if (cache.get(cacheKey)) {
+                res.setHeader('Content-Type', `image/${ext}`);
+                res.writeHead(200);
+
+                return res.end(cache.get(cacheKey));
             }
 
             try {
@@ -70,14 +71,15 @@ const app = (async function() {
 
                 await page.close();
 
-                cache.set(req.url, image, 604800); // 7 days
+                cache.set(cacheKey, image);
 
-                res.writeHead(200, { 'Content-Type': `image/${ext}` });
+                res.setHeader('Content-Type', `image/${ext}`);
+
                 return res.end(image);
             } catch (err) {
-                console.log(err);
+                res.setHeader('Content-Type', `image/${ext}`);
+                res.writeHead(200);
 
-                res.writeHead(200, { 'Content-Type': `image/${ext}` });
                 return res.end();
             }
         },
