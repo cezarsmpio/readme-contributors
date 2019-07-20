@@ -2,9 +2,8 @@ require('dotenv').config();
 
 const chrome = require('chrome-aws-lambda');
 const fogo = require('fogo');
-const etag = require('etag');
 
-const { cache, ttl } = require('./cache');
+const { cache } = require('./cache');
 const { getExtension } = require('./extensions');
 const { getRepoContributors } = require('./repos');
 const { render } = require('./render');
@@ -15,19 +14,6 @@ const app = (async function() {
         executablePath: await chrome.executablePath,
         headless: true,
     });
-
-    function finishRequest({ res, statusCode, cacheKey, extension }) {
-        const future = new Date(cache.getTtl(cacheKey));
-        const resource = cache.get(cacheKey);
-
-        res.setHeader('Cache-Control', `max-age=${ttl}, must-revalidate`);
-        res.setHeader('Expires', future.toUTCString());
-        res.setHeader('Etag', resource.etag);
-        res.setHeader('Content-Type', `image/${extension}`);
-        res.writeHead(statusCode);
-
-        return res.end(resource.image);
-    }
 
     const server = fogo.createServer({
         '/:owner/:repo': async function(req, res, url, params) {
@@ -53,12 +39,10 @@ const app = (async function() {
             const cacheKey = req.url;
 
             if (cache.get(cacheKey)) {
-                return finishRequest({
-                    res,
-                    statusCode: 200,
-                    extension: ext,
-                    cacheKey,
-                });
+                res.setHeader('Content-Type', `image/${ext}`);
+                res.writeHead(200);
+
+                return res.end(cache.get(cacheKey));
             }
 
             try {
@@ -84,21 +68,15 @@ const app = (async function() {
                     type: ext,
                     quality: ext === 'png' ? undefined : Number(quality),
                 });
-                const resource = { image, etag: etag(image) };
 
                 await page.close();
 
-                cache.set(cacheKey, resource);
+                cache.set(cacheKey, image);
 
-                return finishRequest({
-                    res,
-                    statusCode: 200,
-                    extension: ext,
-                    cacheKey,
-                });
+                res.setHeader('Content-Type', `image/${ext}`);
+
+                return res.end(image);
             } catch (err) {
-                res.setHeader('Cache-Control', 'max-age=0, must-revalidate');
-                res.setHeader('Expires', new Date().toUTCString());
                 res.setHeader('Content-Type', `image/${ext}`);
                 res.writeHead(200);
 

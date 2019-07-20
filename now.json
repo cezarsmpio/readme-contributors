@@ -3,7 +3,15 @@
     "name": "readme-contributors",
     "alias": ["readme-contributors.now.sh"],
     "builds": [{ "src": "app/server.js", "use": "@now/node" }],
-    "routes": [{ "src": "/.*", "dest": "app/server.js" }],
+    "regions": ["sfo1","iad1","gru1","bru1","bom1","hnd1","syd1"],
+    "routes": [
+        {
+            "src": "/.*/.*",
+            "headers": { "Cache-Control": "max-age=604800" },
+            "continue": true
+        },
+        { "src": "/.*", "dest": "app/server.js" }
+    ],
     "env": {
         "GITHUB_TOKEN": "@github-token"
     }
