@@ -1,0 +1,28 @@
+language: node_js
+node_js:
+  - "10"
+
+notifications:
+  email: false
+
+before_install:
+  - npm i -g now
+
+script:
+  - npm test
+  - npm run validate
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    env:
+      - NODE_ENV=development
+    script: now -t $NOW_TOKEN --target staging
+
+  - provider: script
+    skip_cleanup: true
+    env:
+      - NODE_ENV=production
+    script: now -t $NOW_TOKEN --target production
+    on:
+      branch: master

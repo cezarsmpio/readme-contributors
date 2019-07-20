@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render 1`] = `"<style>body { font-size: 16px; }</style><ul class=\\"contributors-list\\"><li class=\\"contributor\\"><img src=https://avatars3.githubusercontent.com/u/0?v=4 width=\\"25\\" /></li><li class=\\"contributor\\"><img src=https://avatars3.githubusercontent.com/u/0?v=4 width=\\"25\\" /></li></ul>"`;
+
+exports[`should render a contributor item 1`] = `"<li class=\\"contributor\\"><img src=https://avatars3.githubusercontent.com/u/0?v=4 width=\\"30\\" /></li>"`;
+
+exports[`should render a list of contributors 1`] = `"<ul class=\\"contributors-list\\"><li class=\\"contributor\\"><img src=https://avatars3.githubusercontent.com/u/0?v=4 width=\\"30\\" /></li><li class=\\"contributor\\"><img src=https://avatars3.githubusercontent.com/u/0?v=4 width=\\"30\\" /></li></ul>"`;
