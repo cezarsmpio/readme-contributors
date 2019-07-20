@@ -20,7 +20,7 @@ const app = (async function() {
         const future = new Date(cache.getTtl(cacheKey));
         const resource = cache.get(cacheKey);
 
-        res.setHeader('Cache-Control', `max-age=${ttl}`);
+        res.setHeader('Cache-Control', `max-age=${ttl}, must-revalidate`);
         res.setHeader('Expires', future.toUTCString());
         res.setHeader('Etag', resource.etag);
         res.setHeader('Content-Type', `image/${extension}`);
@@ -97,7 +97,7 @@ const app = (async function() {
                     cacheKey,
                 });
             } catch (err) {
-                res.setHeader('Cache-Control', 'max-age=0');
+                res.setHeader('Cache-Control', 'max-age=0, must-revalidate');
                 res.setHeader('Expires', new Date().toUTCString());
                 res.setHeader('Content-Type', `image/${ext}`);
                 res.writeHead(200);
