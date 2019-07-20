@@ -1,6 +1,6 @@
 # readme-contributors 🤖
 
-> No, you don't need to install anything.
+> Show who contributes. No, you don't need to install anything.
 
 ## Usage
 
@@ -13,6 +13,8 @@
 
 ![Contributors](https://readme-contributors.now.sh/facebook/react?extension=jpg&width=300)
 ```
+
+![Contributors](https://readme-contributors.now.sh/facebook/react?extension=jpg&width=300)
 
 ## API
 
