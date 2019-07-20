@@ -1,6 +1,6 @@
 {
     "name": "readme-contributors",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "main": "app/server.js",
     "scripts": {
         "test": "jest",
