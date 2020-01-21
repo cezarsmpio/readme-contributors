@@ -33,6 +33,6 @@
         "puppeteer": "^1.18.1"
     },
     "engines": {
-        "node": "8"
+        "node": "10"
     }
 }
