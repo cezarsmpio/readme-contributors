@@ -3,7 +3,6 @@
     "name": "readme-contributors",
     "alias": ["readme-contributors.now.sh"],
     "builds": [{ "src": "app/server.js", "use": "@now/node" }],
-    "regions": ["sfo1","iad1","gru1","bru1","bom1","hnd1"],
     "routes": [
         {
             "src": "/.*/.*",
